@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETS2 Fracht-Datenbank</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --primary-color: #ff9800;
+            --primary-hover: #ffb74d;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #2a2a2a;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #2a2a2a;
+        }
+
+        code {
+            background-color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #4caf50;
+        }
+
+        .category-row {
+            background-color: #333 !important;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .flex-cell {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ETS2 Fracht-Datenbank</h1>
+    <p class="subtitle">Interaktive Referenzliste für das Save-Editing (Stand: 18.04.2026)</p>
+
+    <div class="controls">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Suche nach Fracht, ID oder Pfad...">
+    </div>
+
+    <table id="cargoTable">
+        <thead>
+            <tr>
+                <th>Fracht-Typ</th>
+                <th>Cargo Data (ID)</th>
+                <th>Data Path (.sii)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="category-row"><td colspan="3">High Power Cargo Pack</td></tr>
+            <tr>
+                <td>Hubschrauber</td>
+                <td><code>cargo.helicopter</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/helicopter/accessory_helicopter.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/helicopter/accessory_helicopter.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Motorjacht (Queen V39)</td>
+                <td><code>cargo.yacht</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/yacht/accessory_yacht.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/yacht/accessory_yacht.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Raupentraktor</td>
+                <td><code>cargo.tractor_c</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/tractor_c/accessory_tractor_t1.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/tractor_c/accessory_tractor_t1.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Bohrgerät</td>
+                <td><code>cargo.driller</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/driller/accessory_driller.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/driller/accessory_driller.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Klimaanlage</td>
+                <td><code>cargo.aircond</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/aircond/accessory_aircond.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/aircond/accessory_aircond.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Gaspipeline</td>
+                <td><code>cargo.gas_pipeline</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/gas_pipeline/accessory_gas_pipeline.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/gas_pipeline/accessory_gas_pipeline.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Pipelinerohre</td>
+                <td><code>cargo.tracks</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/tracks/accessory_tracks.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/tracks/accessory_tracks.sii')">Kopieren</button></td>
+            </tr>
+
+            <tr class="category-row"><td colspan="3">Heavy Cargo Pack</td></tr>
+            <tr>
+                <td>Asphaltfräse</td>
+                <td><code>cargo.asphalt_mill</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/asphalt_mill/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/asphalt_mill/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Kabeltrommel</td>
+                <td><code>cargo.cable_reel</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/cable_reel/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/cable_reel/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Betonbalken</td>
+                <td><code>cargo.concrete_b</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/concrete_b/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/concrete_b/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Planierraupe</td>
+                <td><code>cargo.dozer_crawl</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/dozer_crawl/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/dozer_crawl/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Lokomotive (Vossloh)</td>
+                <td><code>cargo.locomotive</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/locomotive/accessory_locomotive.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/locomotive/accessory_locomotive.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Metall-Zentrierring</td>
+                <td><code>cargo.metal_center</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/metal_center/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/metal_center/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Mobilkran (Rex-Tex)</td>
+                <td><code>cargo.mobile_crane</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/mobile_crane/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/mobile_crane/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Transformator (Groß)</td>
+                <td><code>cargo.transf_big</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/transf_big/accessory_transf_big.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/transf_big/accessory_transf_big.sii')">Kopieren</button></td>
+            </tr>
+
+            <tr class="category-row"><td colspan="3">Special Transport DLC</td></tr>
+            <tr>
+                <td>Kesselteil</td>
+                <td><code>cargo.boiler</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/boiler/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/boiler/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Haul Truck Chassis</td>
+                <td><code>cargo.cat_785c</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/cat_785c/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/cat_785c/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Fertighaus</td>
+                <td><code>cargo.const_house</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/const_house/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/const_house/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Wärmetauscher</td>
+                <td><code>cargo.exch_device</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/exch_device/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/exch_device/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Luxusyacht (Groß)</td>
+                <td><code>cargo.g_yacht</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/g_yacht/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/g_yacht/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Riesige Reifen</td>
+                <td><code>cargo.huge_tyres</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/huge_tyres/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/huge_tyres/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Industrietrommel</td>
+                <td><code>cargo.m_drum</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/m_drum/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/m_drum/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Mysteriöse Box</td>
+                <td><code>cargo.mystery_box</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/mystery_box/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/mystery_box/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Silo</td>
+                <td><code>cargo.silo</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/silo/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/silo/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Windturbinen-Motor</td>
+                <td><code>cargo.wind_mg</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/wind_mg/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/wind_mg/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Windturbinen-Turm</td>
+                <td><code>cargo.wind_plant</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/wind_plant/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/wind_plant/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Service-Boot</td>
+                <td><code>cargo.pilot_boat</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/pilot_boat/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/pilot_boat/accessory.sii')">Kopieren</button></td>
+            </tr>
+
+            <tr class="category-row"><td colspan="3">Volvo Construction Equipment</td></tr>
+            <tr>
+                <td>Dumper (A25G)</td>
+                <td><code>cargo.art_hauler</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/art_hauler/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/art_hauler/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Baggerschaufel</td>
+                <td><code>cargo.bucket</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/bucket/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/bucket/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Kompaktbagger</td>
+                <td><code>cargo.compact_exc</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/compact_exc/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/compact_exc/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Kompaktlader</td>
+                <td><code>cargo.compact_ldr</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/compact_ldr/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/compact_ldr/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Walzenzug</td>
+                <td><code>cargo.padfoot_comp</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/padfoot_comp/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/padfoot_comp/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Radlader (L250H)</td>
+                <td><code>cargo.wheel_loader</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/wheel_loader/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/wheel_loader/accessory.sii')">Kopieren</button></td>
+            </tr>
+
+            <tr class="category-row"><td colspan="3">Base Game & Diverses</td></tr>
+            <tr>
+                <td>Gabelstapler</td>
+                <td><code>cargo.ter_forklift</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/ter_forklift/accessory.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/ter_forklift/accessory.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Bagger</td>
+                <td><code>cargo.excavator</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/excavator/accessory_excavator.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/excavator/accessory_excavator.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Feldhäcksler</td>
+                <td><code>cargo.forage_harv</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/forage_harv/accessory_forage_harv2.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/forage_harv/accessory_forage_harv2.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>PKW (Mehrere)</td>
+                <td><code>cargo.cars</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/cars/accessory_cars.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/cars/accessory_cars.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Segelboot</td>
+                <td><code>cargo.boat</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/boat/accessory_boat.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/boat/accessory_boat.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Lieferwagen</td>
+                <td><code>cargo.vans</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/vans/accessory_vans.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/vans/accessory_vans.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>LKW-Chassis</td>
+                <td><code>cargo.truck</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/truck/accessory_truck.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/truck/accessory_truck.sii')">Kopieren</button></td>
+            </tr>
+            <tr>
+                <td>Traktoren</td>
+                <td><code>cargo.tractor</code></td>
+                <td class="flex-cell"><code>/def/vehicle/cargo/tractor/accessory_tractor.sii</code> <button class="copy-btn" onclick="copyText('/def/vehicle/cargo/tractor/accessory_tractor.sii')">Kopieren</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filterTable() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toLowerCase();
+        let table = document.getElementById("cargoTable");
+        let tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            if (tr[i].classList.contains('category-row')) continue;
+            
+            let tdName = tr[i].getElementsByTagName("td")[0];
+            let tdId = tr[i].getElementsByTagName("td")[1];
+            let tdPath = tr[i].getElementsByTagName("td")[2];
+            
+            if (tdName || tdId || tdPath) {
+                let txtValueName = tdName.textContent || tdName.innerText;
+                let txtValueId = tdId.textContent || tdId.innerText;
+                let txtValuePath = tdPath.textContent || tdPath.innerText;
+                
+                if (txtValueName.toLowerCase().indexOf(filter) > -1 || 
+                    txtValueId.toLowerCase().indexOf(filter) > -1 || 
+                    txtValuePath.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert("Kopiert: " + text);
+        }, function(err) {
+            alert("Fehler beim Kopieren: ", err);
+        });
+    }
+</script>
+
+</body>
+</html>
